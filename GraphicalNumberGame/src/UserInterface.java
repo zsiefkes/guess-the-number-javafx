@@ -123,8 +123,29 @@ public class UserInterface extends Application {
 	}
 	
 	
+	// use regex to check for only integer values in the input string. from https://stackoverflow.com/a/18959399
+	private boolean validateInput(String text) {
+		if (text.equals("")) return false; // return false if text is empty string
+		return text.matches("[0-9]*");
+	}
+	
 	// run each time a guess is submitted. takes nodes to read from and edit as arguments
-	public void handleSubmitGuess(TextField inputField, Text outputText, Button startGameButton, Text displayNumTries, Button submitButton) {
+	private void handleSubmitGuess(TextField inputField, Text outputText, Button startGameButton, Text displayNumTries, Button submitButton) {
+		
+		// get input text
+		String input = inputField.getText();
+		// check for valid input
+		if (!validateInput(input)) {
+			// print an error message and exit method
+			outputText.setText("You must enter a positive integer");
+			inputField.selectAll();
+			return;
+		}
+			
+		// grab the text from the textfield and convert to an integer.
+		int guess = Integer.parseInt(input);
+		// select the guess to make typing next guess easier
+		inputField.selectAll();
 		
 		// increment number of tries
 		numTries++;
@@ -135,10 +156,6 @@ public class UserInterface extends Application {
 			startGameButton.setVisible(true);
 		}
 		
-		// grab the text from the textfield and convert to an integer.
-		int guess = Integer.parseInt(inputField.getText());
-		// select the guess to make typing next guess easier
-		inputField.selectAll();
 		
 		// run the guess by the game
 		int result = game.checkGuess(guess);
