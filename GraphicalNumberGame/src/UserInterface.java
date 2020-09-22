@@ -14,12 +14,11 @@ import javafx.stage.Stage;
 
 public class UserInterface extends Application {
 	
-	// instantiate game variables
-	private Game game = new Game();
+	// instantiate game variables. min and max should be nonnegative integers
 	private int min = 0;
 	private int max = 100;
+	private Game game = new Game(min, max);
 	private String promptText = "Enter a number between " + min + " and " + max + " and hit Enter to play.";
-	private int numTries = 0;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -30,15 +29,13 @@ public class UserInterface extends Application {
 		root.setPadding(new Insets(25, 25, 25, 25));
 
 		
-		// --------------------- nodes -------------------------------
+		// --------------------- nodes ------------------------------- //
 		
 		// input field
 		TextField inputField = new TextField();
-//		inputField.setText(promptText);
 
 		// output field
 		Text outputText = new Text();
-		// note that we didn't have to make this final, as Karsten had us thinking was necessary :S
 		
 		// input button
 		Button submitButton = new Button();
@@ -56,19 +53,16 @@ public class UserInterface extends Application {
 		root.getChildren().add(outputText);
 		root.getChildren().add(inputField);
 		root.getChildren().add(displayNumTries);
-//		root.getChildren().add(submitButton);
 		root.getChildren().add(startGameButton);
 		
 		// hide game buttons to start
 		startGameButton.setVisible(false);
 		submitButton.setVisible(false);
 		
-		// ---------------- event listeners-------------------------------
+		// ---------------- event listeners------------------------------- //
 		
 		// submit guess
 		submitButton.setOnAction(new EventHandler<ActionEvent>() {
-			
-			// your nervous system responds to mindset, intention and willpower----
 			
 			@Override
 			public void handle(ActionEvent arg0) {
@@ -76,7 +70,7 @@ public class UserInterface extends Application {
 			}
 		});
 		
-		// set enter key to run submit button code. from https://stackoverflow.com/a/13881757
+		// set enter key to run submit button code.
 		inputField.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent key) {
@@ -91,11 +85,8 @@ public class UserInterface extends Application {
 			@Override
 			public void handle(ActionEvent arg0) {
 				
-				// generate new number to guess
+				// start new game. generates new number the resets number of tries
 				game.newGame(min, max);
-				
-				// reset number of tries
-				numTries = 0;
 				
 				// alter nodes to be back in game mode
 				inputField.setText("");
@@ -111,7 +102,7 @@ public class UserInterface extends Application {
 		});
 
 		
-		// ---------------------- run display -------------------------
+		// ---------------------- run display ------------------------- //
 		
 		// create scene with root pane
 		Scene scene = new Scene(root, 350, 400);
@@ -123,7 +114,7 @@ public class UserInterface extends Application {
 	}
 	
 	
-	// use regex to check for only integer values in the input string. from https://stackoverflow.com/a/18959399
+	// use regex to check for only integer values in the input string.
 	private boolean validateInput(String text) {
 		if (text.equals("")) return false; // return false if text is empty string
 		return text.matches("[0-9]*");
@@ -134,28 +125,30 @@ public class UserInterface extends Application {
 		
 		// get input text
 		String input = inputField.getText();
-		// check for valid input
+		
+		// check for invalid input
 		if (!validateInput(input)) {
-			// print an error message and exit method
-			outputText.setText("You must enter a positive integer");
+			
+			// if invalid, print an error message and exit method
+			outputText.setText("You must enter a non-negative integer");
 			inputField.selectAll();
 			return;
 		}
 			
 		// grab the text from the textfield and convert to an integer.
 		int guess = Integer.parseInt(input);
+		
 		// select the guess to make typing next guess easier
 		inputField.selectAll();
 		
 		// increment number of tries
-		numTries++;
-		displayNumTries.setText("Number of guesses: " + String.valueOf(numTries));
+		game.incrementNumTries();
+		displayNumTries.setText("Number of guesses: " + game.getNumTries());
+		
 		// if this was the first guess, make game buttons visible
-		if (numTries == 1) {
-//			submitButton.setVisible(true); // not using submit button
+		if (game.getNumTries() == 1) {
 			startGameButton.setVisible(true);
 		}
-		
 		
 		// run the guess by the game
 		int result = game.checkGuess(guess);
@@ -163,14 +156,18 @@ public class UserInterface extends Application {
 		// print the result - too high, too low, or correct
 		if (result < 0) {
 			outputText.setText("Too low! Try again.");
+			
 		} else if (result > 0) {
 			outputText.setText("Too high! Try again.");
+			
 		} else if (result == 0) {
 			outputText.setText("Correct! Well done.");
-			// hide submit guess button and alter nodes to indicate game is over
+			
+			// hide submit guess button and alter text to indicate game is over
 			submitButton.setVisible(false);
-			displayNumTries.setText("Total guesses: " + String.valueOf(numTries));
+			displayNumTries.setText("Total guesses: " + game.getNumTries());
 			startGameButton.setText("Play again");
+			
 			// highlight play again button
 			startGameButton.requestFocus();
 		}
