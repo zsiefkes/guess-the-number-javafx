@@ -14,11 +14,18 @@ import javafx.stage.Stage;
 
 public class UserInterface extends Application {
 	
-	// instantiate game variables. min and max should be nonnegative integers
+	// game related fields. min and max should be nonnegative integers
 	private int min = 0;
 	private int max = 100;
 	private Game game = new Game(min, max);
+	
+	// declare javafx / display related fields
 	private String promptText = "Enter a number between " + min + " and " + max + " and hit Enter to play.";
+	private TextField inputField;
+	private Text outputText;
+	private Button submitButton;
+	private Button startGameButton;
+	private Text displayNumTries;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -32,21 +39,21 @@ public class UserInterface extends Application {
 		// --------------------- nodes ------------------------------- //
 		
 		// input field
-		TextField inputField = new TextField();
+		inputField = new TextField();
 
 		// output field
-		Text outputText = new Text();
+		outputText = new Text();
 		
 		// input button
-		Button submitButton = new Button();
+		submitButton = new Button();
 		submitButton.setText("Enter");
 		
 		// start over / play again button
-		Button startGameButton = new Button();
+		startGameButton = new Button();
 		startGameButton.setText("Start over");
 		
 		// number of tries
-		Text displayNumTries = new Text();
+		displayNumTries = new Text();
 		displayNumTries.setText(promptText);
 
 		// add nodes to pane
@@ -66,7 +73,7 @@ public class UserInterface extends Application {
 			
 			@Override
 			public void handle(ActionEvent arg0) {
-				handleSubmitGuess(inputField, outputText, startGameButton, displayNumTries, submitButton);
+				handleSubmitGuess();
 			}
 		});
 		
@@ -75,7 +82,7 @@ public class UserInterface extends Application {
 			@Override
 			public void handle(KeyEvent key) {
 				if (key.getCode().equals(KeyCode.ENTER)) {
-					handleSubmitGuess(inputField, outputText, startGameButton, displayNumTries, submitButton);
+					handleSubmitGuess();
 				}
 			}
 		});
@@ -121,7 +128,7 @@ public class UserInterface extends Application {
 	}
 	
 	// run each time a guess is submitted. takes nodes to read from and edit as arguments
-	private void handleSubmitGuess(TextField inputField, Text outputText, Button startGameButton, Text displayNumTries, Button submitButton) {
+	private void handleSubmitGuess() {
 		
 		// get input text
 		String input = inputField.getText();
