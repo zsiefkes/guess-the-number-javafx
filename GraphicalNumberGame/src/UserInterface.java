@@ -70,7 +70,6 @@ public class UserInterface extends Application {
 		
 		// submit guess
 		submitButton.setOnAction(new EventHandler<ActionEvent>() {
-			
 			@Override
 			public void handle(ActionEvent arg0) {
 				handleSubmitGuess();
@@ -123,6 +122,7 @@ public class UserInterface extends Application {
 	
 	// use regex to check for only integer values in the input string.
 	private boolean validateInput(String text) {
+		
 		if (text.equals("")) return false; // return false if text is empty string
 		return text.matches("[0-9]*");
 	}
@@ -144,6 +144,13 @@ public class UserInterface extends Application {
 			
 		// grab the text from the textfield and convert to an integer.
 		int guess = Integer.parseInt(input);
+		
+		// check guess is between min and max (inclusive)
+		if (guess < min || guess > max) {
+			outputText.setText("Enter an integer within the range " + min + " to " + max);
+			inputField.selectAll();
+			return;
+		}
 		
 		// select the guess to make typing next guess easier
 		inputField.selectAll();
